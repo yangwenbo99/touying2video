@@ -1,0 +1,4 @@
+paddlespeech
+moviepy
+typst
+pdf2image
