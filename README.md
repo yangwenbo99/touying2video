@@ -2,9 +2,46 @@
 
 The tools converts a touying-typ presentation slide to a presentation video with voice over. 
 It is currently in its proof-of-concept stage.
-To use this tool, import `p2vmeta.typ` in your Typst file.  Currently, it only works with a patched version of `touying-typ`.  The patched `touying-typ` and `p2vmeta.typ` are available in the `demo` directory.  A demo video is available at <https://youtu.be/lJ7X57xG7V8>.
+To use this tool, import `p2vmeta.typ` in your Typst file.  ~~Currently, it only works with a patched version of `touying-typ`.~~ (No longer needed, as we have found a workaround.)  The file to import (`p2vmeta.typ`) is available in the `demo` directory.  A demo video is available at <https://youtu.be/lJ7X57xG7V8>.
+
 
 ## Quick start
+
+A demo file is available at `demo/demo.typ`.   To use the tool, add the following lines at the beginning of your Typst file:
+
+```typst
+#import "@preview/touying:0.6.1": *
+#import "p2vmeta.typ": *     // The typst portion of the tool
+
+#t2sdefaults(                // Set the default settings for the tool
+  transition: "fade",
+  transition_duration: 0.8,
+)
+
+#pdfpc.config(// You may also set defaults for the pdfpc module in touying-typ
+  disable-markdown: false,
+  default-transition: (
+    type: "fade",
+    duration-seconds: 1,
+  ),
+)
+
+#import themes.university: *
+
+#import "@preview/numbly:0.1.0": numbly
+
+#show: university-theme.with(
+    // ... The setting for your theme
+)
+```
+
+**Very import**: At the end of your Typst file, add the following lines:
+
+```typst
+#context t2s-file(here())
+```
+
+## Reference
 
 The following tags are provided:
 - `t2sdefaults`: the default settings for the tool

@@ -1,3 +1,6 @@
+/* Note: some of the code here is adapted from Touying's codebase
+ * The original license is available at https://github.com/touying-typ/touying/tree/main. 
+ */
 
 #let t2sdefaults(
   duration_physical: 2,
@@ -130,3 +133,56 @@
     reverse: reverse,
   ))) <pdfpc> ]
 }
+
+#let t2s-file(loc) = {
+  let arr = query(<pdfpc>).map(it => it.value)
+  let (config, ..slides) = arr.split((t: "NewSlide"))
+  let pdfpc = (
+    pdfpcFormat: 2,
+    disableMarkdown: false,
+  )
+  for item in config {
+    pdfpc.insert(lower(item.t.at(0)) + item.t.slice(1), item.v)
+  }
+  let pages = ()
+  for slide in slides {
+    let page = (
+      idx: 0,
+      label: 1,
+      overlay: 0,
+      forcedOverlay: false,
+      hidden: false,
+      t2s: (),
+    )
+    for item in slide {
+      if item.t == "Idx" {
+        page.idx = item.v
+      } else if item.t == "LogicalSlide" {
+        page.label = str(item.v)
+      } else if item.t == "Overlay" {
+        page.overlay = item.v
+        page.forcedOverlay = item.v > 0
+      } else if item.t == "HiddenSlide" {
+        page.hidden = true
+      } else if item.t == "SaveSlide" {
+        if "savedSlide" not in pdfpc {
+          pdfpc.savedSlide = page.label - 1
+        }
+      } else if item.t == "EndSlide" {
+        if "endSlide" not in pdfpc {
+          pdfpc.endSlide = page.label - 1
+        }
+      } else if item.t == "Note" {
+        page.note = item.v
+      } else if item.t.starts-with("T2s") {
+        page.t2s.push(item)
+      } else {
+        pdfpc.insert(lower(item.t.at(0)) + item.t.slice(1), item.v)
+      }
+    }
+    pages.push(page)
+  }
+  pdfpc.insert("pages", pages)
+  [#metadata(pdfpc)<t2s-file>]
+}
+

@@ -1,11 +1,11 @@
-tts_tool: openai  # May be openai or peddle
+tts_tool: paddlespeech  # May be openai or peddlespeech
 openai:
   model: 'tts-1-hd'
   voice: 'ash'
   api_key: './api_key.txt'
   speed: 1
 
-peddle:
+paddlespeech:
   lang: 'en'
   voc: 'hifigan_ljspeech'
   am: 'fastspeech2_ljspeech'

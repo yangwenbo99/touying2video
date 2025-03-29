@@ -43,7 +43,7 @@ def parse_args():
 
 def query(file: Path, 
           ) -> Dict[str, Any]:
-    J = json.loads(typst.query(file, "<pdfpc-file>", field='value', one=True))
+    J = json.loads(typst.query(file, "<t2s-file>", field='value', one=True))
 
     #####################
     # Defaults
@@ -128,7 +128,7 @@ def query(file: Path,
 
 def gen_speech(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFileClip]]]:
     if CONFIG['tts_tool'] == 'paddlespeech':
-        return gen_speech_peddle(speeches)
+        return gen_speech_paddle(speeches)
     elif CONFIG['tts_tool'] == 'openai':
         return gen_speech_openai(speeches)
     else:
@@ -169,7 +169,7 @@ def gen_speech_openai(speeches: List[str]) -> List[Dict[str, Union[str, float, A
     return speech_data
 
 
-def gen_speech_peddle(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFileClip]]]:
+def gen_speech_paddle(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFileClip]]]:
     from paddlespeech.cli.tts.infer import TTSExecutor
     tts = TTSExecutor()
 
@@ -189,9 +189,9 @@ def gen_speech_peddle(speeches: List[str]) -> List[Dict[str, Union[str, float, A
                 # am='fastspeech2_male',
                 # Another acceptable combintion would be
                 # --lang en --voc pwgan_ljspeech --am fastspeech2_ljspeech
-                lang='en',
-                voc='hifigan_ljspeech',
-                am='fastspeech2_ljspeech',
+                lang=CONFIG['paddlespeech']['lang'],
+                voc=CONFIG['paddlespeech']['voc'],
+                am=CONFIG['paddlespeech']['am'],
                 text=speech, output=f"{TMP_DIR}/speech_{i}.wav")
         audio_clip = AudioFileClip(f"{TMP_DIR}/speech_{i}.wav")
         speech_data.append({

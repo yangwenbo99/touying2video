@@ -1,7 +1,8 @@
 #import "@preview/lasaveur:0.1.3": *
 // Currently, a patched version of touying is needed
-// #import "@preview/touying:0.6.1": *
-#import "touying/src/core.typ": *  
+#import "@preview/touying:0.6.1": *
+// #import "touying/src/core.typ": *  
+// patched version no longer needed
 #import "p2vmeta.typ": *
 
 #t2sdefaults(
@@ -20,7 +21,9 @@
   ),
 )
 
-#import "touying/themes/university.typ": *
+#import themes.university: *
+// #import "touying/themes/university.typ": *
+// patched version no longer needed
 
 #import "@preview/numbly:0.1.0": numbly
 
@@ -91,4 +94,4 @@
   #t2s(start_from: 2)[Its video generation speed is rather slow.  This is due to the fact that it uses MoviePy to generate videos.]
 ]
 
-
+#context t2s-file(here())
