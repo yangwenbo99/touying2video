@@ -87,8 +87,14 @@
 == Liminations
 
 #slide[
-  - Currently, patched version of touying is needed
-    #t2s(start_from: 1)[However, there are some limitations Currently, a patched version of touying is needed.]
+  - You need to add the following line at the end of your Typst file:
+    ```typst
+      #context t2s-file(here())
+    ```
+    #t2s(start_from: 1)[
+      However, there are some limitations.  
+      Since we kind of hacked the process, you need to add one line at the end of your Typst file to make it work.
+    ]
   #pause
   - Rather slow video generated speed (due to MoviePy)
     #pause

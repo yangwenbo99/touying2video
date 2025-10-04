@@ -2,7 +2,7 @@
 
 The tools converts a touying-typ presentation slide to a presentation video with voice over. 
 It is currently in its proof-of-concept stage.
-To use this tool, import `p2vmeta.typ` in your Typst file.  ~~Currently, it only works with a patched version of `touying-typ`.~~ (No longer needed, as we have found a workaround.)  The file to import (`p2vmeta.typ`) is available in the `demo` directory.  A demo video is available at <https://youtu.be/lJ7X57xG7V8>.
+To use this tool, import `p2vmeta.typ` in your Typst file.  ~~Currently, it only works with a patched version of `touying-typ`.~~ (No longer needed, as we have found a workaround.)  The file to import (`p2vmeta.typ`) is available in the `demo` directory.  A demo video is available at <https://youtu.be/ViFw1waMfRA>.
 
 
 ## Installation
