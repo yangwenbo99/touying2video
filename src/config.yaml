@@ -1,4 +1,4 @@
-tts_tool: paddlespeech  # May be openai or peddlespeech
+tts_tool: chattts  # May be openai or peddlespeech or chattts or load
 openai:
   model: 'tts-1-hd'
   voice: 'ash'
@@ -10,3 +10,10 @@ paddlespeech:
   voc: 'hifigan_ljspeech'
   am: 'fastspeech2_ljspeech'
 
+chattts:
+  speaker: 'speaker_man_calm_2.pt'
+  speaker_save_path: null
+
+
+load:
+  path: './tmp_demo/'

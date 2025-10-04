@@ -131,6 +131,10 @@ def gen_speech(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFil
         return gen_speech_paddle(speeches)
     elif CONFIG['tts_tool'] == 'openai':
         return gen_speech_openai(speeches)
+    elif CONFIG['tts_tool'] == 'chattts':
+        return gen_speech_chattts(speeches)
+    elif CONFIG['tts_tool'] == 'load':
+        return gen_speech_load(speeches)
     else:
         raise ValueError(f"Unknown TTS tool: {CONFIG['tts_tool']}")
 
@@ -200,6 +204,95 @@ def gen_speech_paddle(speeches: List[str]) -> List[Dict[str, Union[str, float, A
             'audio_clip': audio_clip,
             })
     return speech_data
+
+_CHATTTS = None
+_CHATTTS_INFER_CODE = None
+
+def gen_speech_chattts(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFileClip]]]:
+    import ChatTTS
+    import torch
+    import torchaudio
+    global _CHATTTS, _CHATTTS_INFER_CODE
+    if _CHATTTS is None:
+        try:
+            torch.set_float32_matmul_precision('high')
+        except:
+            print('Warning: Your torch version does not support set_float32_matmul_precision, computation will be slower')
+
+        _CHATTTS = ChatTTS.Chat()
+        _CHATTTS.load(compile=True)
+
+        if CONFIG['chattts']['speaker'] is not None:
+            spk_emb = torch.load(CONFIG['chattts']['speaker'])
+        else:
+            spk_emb = _CHATTTS.sample_random_speaker()
+            if 'speaker_save_path' in CONFIG['chattts'] and CONFIG['chattts']['speaker_save_path'] is not None:
+                torch.save(spk_emb, CONFIG['chattts']['speaker_save_path'])
+        params_infer_code = ChatTTS.Chat.InferCodeParams(
+            spk_emb=spk_emb, # add sampled speaker 
+            temperature=.3,   # using custom temperature
+            top_P=0.7,        # top P decode
+            top_K=20,         # top K decode
+        )
+        _CHATTTS_INFER_CODE = params_infer_code
+
+    speech_data = []
+    for i, speech in enumerate(speeches):
+        print(f"Generating speech {i+1}/{len(speeches)}: {speech}")
+        if speech is None or len(speech.strip()) == 0:
+            speech_data.append({
+                'file': None,
+                'duration': 0,
+                'audio_clip': None,
+                })
+            continue
+        wavs = _CHATTTS.infer(
+                [speech],
+                params_infer_code=_CHATTTS_INFER_CODE,
+                )
+        if len(wavs) != 1:
+            print(f"Warning: ChatTTS shits out {len(wavs)} wavs for one input, all but the first will be lost")
+        try:
+            torchaudio.save(f"{TMP_DIR}/speech_{i}.wav", torch.tensor(wavs[0]).unsqueeze(0), 24000)
+        except:
+            torchaudio.save(f"{TMP_DIR}/speech_{i}.wav", torch.tensor(wavs[0]), 24000)
+        audio_clip = AudioFileClip(f"{TMP_DIR}/speech_{i}.wav")
+        speech_data.append({
+            'file': f"{TMP_DIR}/speech_{i}.wav",
+            'duration': audio_clip.duration,
+            'audio_clip': audio_clip,
+            })
+    return speech_data
+
+
+def gen_speech_load(speeches: List[str]) -> List[Dict[str, Union[str, float, AudioFileClip]]]:
+    '''
+    This function will load the speech from the given path.
+    '''
+    speech_data = []
+    root = Path(CONFIG['load']['path'])
+    for i in range(len(speeches)):
+        print(f"Loading speech {i+1}/{len(speeches)}: {speeches[i]}")
+        if speeches[i] is None or len(speeches[i].strip()) == 0:
+            speeches[i] = None
+            speech_data.append({
+                'file': None,
+                'duration': 0,
+                'audio_clip': None,
+                })
+        else:
+            fpath = root / f'speech_{i}.wav'
+            if not fpath.exists():
+                raise ValueError(f"Speech file {fpath} does not exist")
+            audio_clip = AudioFileClip(fpath)
+            speech_data.append({
+                'file': str(fpath),
+                'duration': audio_clip.duration,
+                'audio_clip': audio_clip,
+                })
+    return speech_data
+
+
 
 
 def slides_to_images(file: Path, dpi=200, skip_saving=False) -> List[Path]:

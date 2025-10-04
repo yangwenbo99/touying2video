@@ -5,6 +5,15 @@ It is currently in its proof-of-concept stage.
 To use this tool, import `p2vmeta.typ` in your Typst file.  ~~Currently, it only works with a patched version of `touying-typ`.~~ (No longer needed, as we have found a workaround.)  The file to import (`p2vmeta.typ`) is available in the `demo` directory.  A demo video is available at <https://youtu.be/lJ7X57xG7V8>.
 
 
+## Installation
+
+Install the dependencies in `requirements.txt` (a modified version of `moviepy` might be preferable, see below).
+Then, depends on which TTS backend you want to use, install the corresponding TTS package.  Currently, we support:
+- OpenAI's (requires an API key, **Recommended** for best quality)
+- ChatTTS (local, requires a GPU, **Recommended** for local use)
+- PaddleSpeech (local, requires a GPU)
+
+
 ## Quick start
 
 A demo file is available at `demo/demo.typ`.   To use the tool, add the following lines at the beginning of your Typst file:
@@ -40,6 +49,37 @@ A demo file is available at `demo/demo.typ`.   To use the tool, add the followin
 ```typst
 #context t2s-file(here())
 ```
+
+After compiling the Typst file, run the following command to generate the video:
+
+```bash
+python main.py path/to/your/typst/file.typ
+```
+
+## Troubleshooting
+
+### Feeling slow? 
+
+Try `marcelwoo/moviepy2_cuda`...  It has been tested to work with ChatTTS, but might have trouble with Paddle.
+
+### RuntimeError: narrow(): length must be non-negative.
+
+` pip install transformers==4.53.2`
+
+
+### FFMPEG Complain about missing encoder, but it is installed
+
+Set 
+```bash
+export FFMPEG_BINARY=ffmpeg_in_your_system
+export FFPLY_BINARY=ffplay_in_your_system
+```
+for example, 
+```bash
+export FFMPEG_BINARY=/usr/bin/ffmpeg
+export FFPLY_BINARY=/usr/bin/ffplay
+```
+
 
 ## Reference
 

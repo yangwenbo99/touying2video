@@ -88,10 +88,13 @@
 
 #slide[
   - Currently, patched version of touying is needed
-  #t2s(start_from: 1)[However, there are some limitations Currently, a patched version of touying is needed.]
+    #t2s(start_from: 1)[However, there are some limitations Currently, a patched version of touying is needed.]
   #pause
   - Rather slow video generated speed (due to MoviePy)
-  #t2s(start_from: 2)[Its video generation speed is rather slow.  This is due to the fact that it uses MoviePy to generate videos.]
+    #pause
+    - Solution: Try use the "hacked" version of MoviePy: `marcelwoo/moviepy2_cuda`
+    #t2s(start_from: 2)[Its video generation speed is rather slow.  This is due to the fact that it uses Movie Pai to generate videos.]
+    #t2s(start_from: 3)[This can be improved by using a "hacked" version of MoviePy: provided by Marcel Woo.  However, this might cause some issues if you use Baidu's PaddlePaddle as the TTS backend.]
 ]
 
 #context t2s-file(here())
